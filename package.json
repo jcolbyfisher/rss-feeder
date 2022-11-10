@@ -9,7 +9,8 @@
   "scripts": {
     "test": "tap \"test/**/*.test.js\"",
     "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "dev": "fastify start -w -l info -P app.js",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +23,12 @@
     "fastify-plugin": "^3.0.0"
   },
   "devDependencies": {
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.3",
     "prettier": "2.7.1",
     "tap": "^16.1.0"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
