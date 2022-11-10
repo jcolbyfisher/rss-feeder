@@ -59,3 +59,6 @@ profile*
 
 # etc
 .tool-versions
+.dockerignore
+Dockerfile
+*.toml
