@@ -28,6 +28,9 @@ module.exports = async function () {
         const story = $('.story-id-page-description').html();
         const coverage = $('.featured-coverage').html();
 
+        // TODO: manually parse this
+        const timestamp = $('.date-display-single').text();
+
         const content = `${image}<br />${story}<br />${coverage}`;
 
         return {
@@ -35,6 +38,8 @@ module.exports = async function () {
           image,
           link,
           content,
+          createdAt: timestamp,
+          updatedAt: timestamp,
         };
       })
   );
