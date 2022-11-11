@@ -1,7 +1,11 @@
 'use strict';
 
+const feed = require('../../meals/allSides');
+const toAtom = require('../../utils/toAtom');
+
 module.exports = async function (fastify, opts) {
   fastify.get('/', async function (request, reply) {
-    return 'this is an example';
+    const data = await feed();
+    return toAtom(data);
   });
 };
