@@ -1,3 +1,20 @@
+# rss-feeder
+
+Convert a site into an RSS feed. Yummy!
+
+TODO:
+
+- [x] scrape a site
+- [x] generate basic atom feed direct from site
+- [x] sqlite db with schema migration
+- [x] store scraped site data in db
+- [x] generate atom feed from db data
+- [ ] make db work in deployable environment
+- [ ] get schema migrations to run from anything _but_ an API request
+- [ ] use worker/job to scrape site on scheduled basis
+- [ ] create nice endpoints/API's for fetching feeds
+- [ ] general code quality clean up
+
 # Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
 
 This project was bootstrapped with Fastify-CLI.
