@@ -2,6 +2,7 @@
 
 const path = require('path');
 const AutoLoad = require('@fastify/autoload');
+const fastifySqlite = require('fastify-sqlite');
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
@@ -21,5 +22,9 @@ module.exports = async function (fastify, opts) {
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'routes'),
     options: Object.assign({}, opts),
+  });
+
+  fastify.register(fastifySqlite, {
+    dbFile: 'db/rss_feeder.sqlite',
   });
 };
