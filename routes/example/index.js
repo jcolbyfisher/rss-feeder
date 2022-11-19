@@ -33,7 +33,6 @@ module.exports = async function (fastify, opts) {
       FOREIGN KEY (siteId) REFERENCES sites (id),
       UNIQUE (siteId, url) ON CONFLICT REPLACE
     )`);
-    // PRIMARY KEY (id, siteId, url),
 
     fastify.sqlite.exec(`
       CREATE INDEX idx_entries_siteId
@@ -51,8 +50,6 @@ module.exports = async function (fastify, opts) {
           $name: name,
         },
         function (err, data) {
-          console.log('getSite', { err, data });
-
           if (err) {
             return reject(err);
           } else {
@@ -76,8 +73,6 @@ module.exports = async function (fastify, opts) {
           $lastFetchedAt: new Date().getTime(),
         },
         function (err) {
-          console.log('createSite', { err, data: this });
-
           if (err) {
             return reject(err);
           } else {
@@ -89,7 +84,6 @@ module.exports = async function (fastify, opts) {
   }
 
   function updateSite(name, url, icon) {
-    console.log('in update', { name, url, icon });
     return new Promise(function (resolve, reject) {
       fastify.sqlite.run(
         `
@@ -104,8 +98,6 @@ module.exports = async function (fastify, opts) {
           $lastFetchedAt: new Date().getTime(),
         },
         function (err) {
-          console.log('updateSite', { err, data: this });
-
           if (err) {
             return reject(err);
           } else {
@@ -117,7 +109,6 @@ module.exports = async function (fastify, opts) {
   }
 
   function getEntry(siteId, url) {
-    console.log('in getEntry', { siteId, url });
     return new Promise(function (resolve, reject) {
       fastify.sqlite.get(
         `
@@ -130,8 +121,6 @@ module.exports = async function (fastify, opts) {
           $url: url,
         },
         function (err, data) {
-          console.log('getEntry', { err, data });
-
           if (err) {
             return reject(err);
           } else {
@@ -143,7 +132,6 @@ module.exports = async function (fastify, opts) {
   }
 
   function getLatestEntriesForSite(siteId) {
-    console.log('in getLatestEntriesForSite', { siteId });
     return new Promise(function (resolve, reject) {
       fastify.sqlite.all(
         `
@@ -156,8 +144,6 @@ module.exports = async function (fastify, opts) {
           $siteId: siteId,
         },
         function (err, data) {
-          console.log('getLatestEntriesForSite', { err, data });
-
           if (err) {
             return reject(err);
           } else {
@@ -169,14 +155,6 @@ module.exports = async function (fastify, opts) {
   }
 
   function createEntry(siteId, title, url, content, lastFetchedAt) {
-    console.log('createEntry start', {
-      siteId,
-      title,
-      url,
-      content,
-      lastFetchedAt,
-    });
-
     return new Promise(function (resolve, reject) {
       fastify.sqlite.run(
         `
@@ -192,8 +170,6 @@ module.exports = async function (fastify, opts) {
           $fetchedAt: lastFetchedAt,
         },
         function (err) {
-          console.log('createEntry', { err, data: this });
-
           if (err) {
             return reject(err);
           } else {
@@ -205,13 +181,6 @@ module.exports = async function (fastify, opts) {
   }
 
   function upsertEntry(siteId, name, url, content, lastFetchedAt) {
-    console.log('upsertEntry start', {
-      siteId,
-      name,
-      url,
-      content,
-      lastFetchedAt,
-    });
     return new Promise(function (resolve, reject) {
       fastify.sqlite.run(
         `
@@ -231,8 +200,6 @@ module.exports = async function (fastify, opts) {
           $fetchedAt: lastFetchedAt,
         },
         function (err, data) {
-          console.log('upsertEntry done', { err, data });
-
           if (err) {
             return reject(err);
           } else {
@@ -246,34 +213,8 @@ module.exports = async function (fastify, opts) {
   fastify.get('/refresh', async function () {
     try {
       const siteFeed = await feed();
-      // const siteFeed = {
-      //   name: 'AllSides',
-      //   url: 'https://www.allsides.com',
-      //   icon: 'https://www.allsides.com/sites/default/files/AllSides-Icon.png',
-      //   entries: [
-      //     {
-      //       title: 'test1',
-      //       link: 'news.ycombinator.com',
-      //       content: 'test 123 hello',
-      //       timestamp: new Date().getTime(),
-      //     },
-      //     {
-      //       title: 'test2',
-      //       link: 'news.ycombinator.com',
-      //       content: 'test 234 hello',
-      //       timestamp: new Date().getTime(),
-      //     },
-      //     {
-      //       title: 'test3',
-      //       link: 'news.happy.com',
-      //       content: 'test hello',
-      //       timestamp: new Date().getTime(),
-      //     },
-      //   ],
-      // };
 
       let siteCache = await getSite(siteFeed.name);
-      console.log('++++', { siteCache });
 
       if (!siteCache) {
         siteCache = await createSite(
@@ -288,7 +229,6 @@ module.exports = async function (fastify, opts) {
       const res = await Promise.all(
         siteFeed.entries.map(async (entry) => {
           const existingEntry = await getEntry(siteCache.id, entry.link);
-          console.log({ existingEntry });
 
           if (!existingEntry) {
             await createEntry(
@@ -306,8 +246,6 @@ module.exports = async function (fastify, opts) {
         })
       );
 
-      console.log(' we done yet ? ', { res });
-
       return { siteCache, res };
     } catch (ex) {
       return ex;
@@ -315,8 +253,6 @@ module.exports = async function (fastify, opts) {
   });
 
   fastify.get('/feed', async function ({ query }, reply) {
-    // return getSite(query.site);
-    console.log({ query });
     const site = await getSite(query.site);
 
     if (!site) {
