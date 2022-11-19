@@ -1,18 +1,18 @@
 function buildAtomBase({
   siteTitle,
-  hostWithSiteIdentifier,
   siteIcon,
-  updatedAt,
+  lastFetchedAt,
   siteUrl,
   entries,
 }) {
+  const hostWithSiteIdentifier = `${siteTitle}: ${siteUrl}`;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
   <title type="text">${siteTitle}</title>
   <id>${hostWithSiteIdentifier}</id>
   <icon>${siteIcon}</icon>
   <logo>${siteIcon}</logo>
-  <updated>${updatedAt}</updated>
+  <updated>${lastFetchedAt}</updated>
   <author>
     <name>rss-feeder</name>
   </author>
@@ -22,17 +22,29 @@ function buildAtomBase({
 </feed>`;
 }
 
-function buildAtomEntry({ title, image, link, content, createdAt, updatedAt }) {
+function buildAtomEntry({ title, url, content, timestamp }) {
   return `<entry>
   <title type="html">${title}</title>
-  <published>${createdAt}</published>
-  <updated>${updatedAt}</updated>
-  <id>${link}</id>
-  <link rel="alternate" type="text/html" href="${link}"/>
+  <published>${timestamp}</published>
+  <updated>${timestamp}</updated>
+  <id>${url}</id>
+  <link rel="alternate" type="text/html" href="${url}"/>
   <content type="html"><![CDATA[${content}]]></content>
 </entry>`;
 }
 
-module.exports = function ({ siteTitle, siteUrl, siteIcon, entries }) {
-  return buildAtomBase({ siteTitle, siteUrl, siteIcon, entries });
+module.exports = function (
+  siteTitle,
+  siteUrl,
+  siteIcon,
+  lastFetchedAt,
+  entries
+) {
+  return buildAtomBase({
+    siteTitle,
+    siteUrl,
+    siteIcon,
+    lastFetchedAt,
+    entries,
+  });
 };
