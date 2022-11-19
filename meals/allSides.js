@@ -1,13 +1,13 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const siteTitle = 'AllSides';
-const siteUrl = 'https://www.allsides.com';
-const siteIcon =
-  'https://www.allsides.com/sites/default/files/AllSides-Icon.png';
+const name = 'AllSides';
+const url = 'https://www.allsides.com';
+const icon = 'https://www.allsides.com/sites/default/files/AllSides-Icon.png';
+const expiresAfter = 15;
 
 module.exports = async function () {
-  let page = await axios.get(siteUrl);
+  let page = await axios.get(url);
   let $ = cheerio.load(page.data);
 
   const entries = await Promise.all(
@@ -15,7 +15,7 @@ module.exports = async function () {
       .toArray()
       .map(async (headline) => {
         const title = $(headline).find('a.main-link').text();
-        const link = siteUrl + $(headline).find('a.main-link').attr('href');
+        const link = url + $(headline).find('a.main-link').attr('href');
         const imageSrc = $(headline)
           .find('.headline-roundup-image img')
           .attr('src');
@@ -38,11 +38,10 @@ module.exports = async function () {
           image,
           link,
           content,
-          createdAt: timestamp,
-          updatedAt: timestamp,
+          timestamp,
         };
       })
   );
 
-  return { siteTitle, siteUrl, siteIcon, entries };
+  return { name, url, icon, expiresAfter, entries };
 };
