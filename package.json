@@ -22,7 +22,8 @@
     "cheerio": "^1.0.0-rc.12",
     "fastify": "^4.0.0",
     "fastify-cli": "^4.4.0",
-    "fastify-plugin": "^3.0.0"
+    "fastify-plugin": "^3.0.0",
+    "fastify-sqlite": "^1.1.0"
   },
   "devDependencies": {
     "husky": "^8.0.2",
