@@ -57,6 +57,9 @@ profile*
 *clinic*
 *flamegraph*
 
+#database
+db
+
 # etc
 .tool-versions
 .dockerignore
