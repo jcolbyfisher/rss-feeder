@@ -10,6 +10,7 @@
     "test": "tap \"test/**/*.test.js\"",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js",
+    "migrate": "node ./postgrator.mjs",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -23,7 +24,8 @@
     "fastify": "^4.0.0",
     "fastify-cli": "^4.4.0",
     "fastify-plugin": "^3.0.0",
-    "fastify-sqlite": "^1.1.0"
+    "fastify-sqlite": "^1.1.0",
+    "postgrator": "^7.1.1"
   },
   "devDependencies": {
     "husky": "^8.0.2",
