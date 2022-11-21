@@ -11,7 +11,7 @@ TODO:
 - [x] generate atom feed from db data
 - [ ] make db work in deployable environment
 - [x] get schema migrations to run from anything _but_ an API request
-- [ ] use worker/job to scrape site on scheduled basis
+- [x] use worker/job to scrape site on scheduled basis
 - [ ] create nice endpoints/API's for fetching feeds
 - [ ] general code quality clean up
 
