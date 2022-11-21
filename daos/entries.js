@@ -4,18 +4,14 @@ function getEntry(db, siteId, url) {
       `
         SELECT * 
         FROM entries
-        WHERE siteId=$siteId AND url=$url
+        WHERE siteId=$siteId AND url=$url;
       `,
       {
         $siteId: siteId,
         $url: url,
       },
       function (err, data) {
-        if (err) {
-          return reject(err);
-        } else {
-          return resolve(data);
-        }
+        return err ? reject(err) : resolve(data);
       }
     );
   });
@@ -25,8 +21,8 @@ function createEntry(db, siteId, title, url, content, timestamp, fetchedAt) {
   return new Promise(function (resolve, reject) {
     db.run(
       `
-      INSERT INTO entries (siteId, title, url, content, timestamp, fetchedAt) 
-      VALUES ($siteId, $title, $url, $content, $timestamp, $fetchedAt)
+        INSERT INTO entries (siteId, title, url, content, timestamp, fetchedAt) 
+        VALUES ($siteId, $title, $url, $content, $timestamp, $fetchedAt);
       `,
       {
         $siteId: siteId,
@@ -37,11 +33,7 @@ function createEntry(db, siteId, title, url, content, timestamp, fetchedAt) {
         $fetchedAt: fetchedAt,
       },
       function (err) {
-        if (err) {
-          return reject(err);
-        } else {
-          return resolve(this);
-        }
+        return err ? reject(err) : resolve(this);
       }
     );
   });
@@ -54,17 +46,13 @@ function getLatestEntriesForSite(db, siteId) {
         SELECT * 
         FROM entries
         WHERE siteId=$siteId
-        LIMIT 15
+        LIMIT 15;
       `,
       {
         $siteId: siteId,
       },
       function (err, data) {
-        if (err) {
-          return reject(err);
-        } else {
-          return resolve(data);
-        }
+        return err ? reject(err) : resolve(data);
       }
     );
   });
