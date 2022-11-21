@@ -15,8 +15,8 @@ CREATE TABLE
     siteId INTEGER NOT NULL,
     url TEXT NOT NULL,
     title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    timestamp INTEGER NOT NULL,
+    content TEXT,
+    timestamp INTEGER,
     fetchedAt INTEGER NOT NULL,
     FOREIGN KEY (siteId) REFERENCES sites (id),
     UNIQUE (siteId, url) ON CONFLICT REPLACE
