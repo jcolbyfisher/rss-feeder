@@ -4,6 +4,8 @@ const path = require('path');
 
 const feed = require('../meals/allSides');
 
+const TASK_NAME = 'buildMenu';
+
 function getSite(db, name) {
   return new Promise(function (resolve, reject) {
     db.get(
@@ -22,7 +24,7 @@ function getSite(db, name) {
   });
 }
 
-function createSite(db, name, url, icon) {
+function createSite(db, name, url, icon, lastFetchedAt) {
   return new Promise(function (resolve, reject) {
     db.run(
       `
@@ -32,7 +34,30 @@ function createSite(db, name, url, icon) {
         $name: name,
         $url: url,
         $icon: icon,
-        $lastFetchedAt: new Date().getTime(),
+        $lastFetchedAt: lastFetchedAt,
+      },
+      function (err) {
+        if (err) {
+          return reject(err);
+        } else {
+          return resolve(this);
+        }
+      }
+    );
+  });
+}
+
+function updateSite(db, id, lastFetchedAt) {
+  return new Promise(function (resolve, reject) {
+    db.run(
+      `
+        UPDATE sites 
+        SET lastFetchedAt=$lastFetchedAt
+        WHERE id=$id
+      `,
+      {
+        $id: id,
+        $lastFetchedAt: lastFetchedAt,
       },
       function (err) {
         if (err) {
@@ -68,7 +93,7 @@ function getEntry(db, siteId, url) {
   });
 }
 
-function createEntry(db, siteId, title, url, content, lastFetchedAt) {
+function createEntry(db, siteId, title, url, content, timestamp, fetchedAt) {
   return new Promise(function (resolve, reject) {
     db.run(
       `
@@ -80,8 +105,8 @@ function createEntry(db, siteId, title, url, content, lastFetchedAt) {
         $title: title,
         $url: url,
         $content: content,
-        $timestamp: lastFetchedAt,
-        $fetchedAt: lastFetchedAt,
+        $timestamp: timestamp,
+        $fetchedAt: fetchedAt,
       },
       function (err) {
         if (err) {
@@ -95,65 +120,90 @@ function createEntry(db, siteId, title, url, content, lastFetchedAt) {
 }
 
 const task = new AsyncTask(
-  'buildMenu',
+  TASK_NAME,
   () => {
-    console.log('starting job');
+    console.log(TASK_NAME, 'starting task');
 
     return new Promise(async (resolve, reject) => {
-      try {
-        const db = new sqlite3.Database(
-          path.join(__dirname, '../db/rss_feeder.sqlite')
-        );
+      const db = new sqlite3.Database(
+        path.join(__dirname, '../db/rss_feeder.sqlite')
+      );
 
+      try {
         const siteFeed = await feed();
+        const fetchedAt = new Date().getTime();
+
+        console.log(TASK_NAME, siteFeed.name, 'processing site');
 
         let siteCache = await getSite(db, siteFeed.name);
 
-        if (!siteCache) {
+        if (siteCache) {
+          await updateSite(db, siteCache.id, fetchedAt);
+
+          siteCache.fetchedAt = fetchedAt;
+        } else {
           siteCache = await createSite(
             db,
             siteFeed.name,
             siteFeed.url,
-            siteFeed.icon
+            siteFeed.icon,
+            fetchedAt
           );
 
           siteCache = await getSite(db, siteFeed.name);
         }
 
-        const res = await Promise.all(
-          siteFeed.entries.map(async (entry) => {
-            const existingEntry = await getEntry(db, siteCache.id, entry.link);
+        console.log(
+          TASK_NAME,
+          siteFeed.name,
+          `processing 's ${siteFeed.entries.length} entries`
+        );
 
-            if (!existingEntry) {
-              await createEntry(
+        await Promise.all(
+          siteFeed.entries.map(async (entry) => {
+            try {
+              const existingEntry = await getEntry(
                 db,
                 siteCache.id,
-                entry.title,
-                entry.link,
-                entry.content,
-                entry.timestamp
+                entry.link
               );
 
-              return await getEntry(db, siteCache.id, entry.link);
-            } else {
-              return await existingEntry;
+              if (!existingEntry) {
+                await createEntry(
+                  db,
+                  siteCache.id,
+                  entry.title,
+                  entry.link,
+                  entry.content,
+                  entry.timestamp,
+                  fetchedAt
+                );
+              }
+
+              return true;
+            } catch (ex) {
+              console.error(TASK_NAME, ex, {
+                siteId: siteCache.id,
+                title: entry.title,
+                url: entry.link,
+              });
             }
           })
         );
 
-        await db.close();
-
-        console.log('job done');
+        console.log(TASK_NAME, siteCache.name, 'job done');
 
         return resolve();
       } catch (ex) {
-        console.error(ex);
+        console.error(TASK_NAME, ex, 'task runtime error');
         return reject(ex);
+      } finally {
+        db.close();
       }
     });
   },
-  (err) => {
-    console.error(err);
+  (ex) => {
+    console.error(TASK_NAME, ex, 'AsyncTask error');
   }
 );
 
