@@ -18,19 +18,22 @@ function buildAtomBase({
   </author>
   <link rel="alternate" type="text/html" href="${siteUrl}"/>
   <link rel="self" type="application/atom+xml" href="${hostWithSiteIdentifier}"/>
-  ${entries.map(buildAtomEntry)}
+${entries.map(buildAtomEntry).join('')}
 </feed>`;
 }
 
 function buildAtomEntry({ title, url, content, timestamp }) {
-  return `<entry>
-  <title type="html">${title}</title>
-  <published>${timestamp}</published>
-  <updated>${timestamp}</updated>
-  <id>${url}</id>
-  <link rel="alternate" type="text/html" href="${url}"/>
-  <content type="html"><![CDATA[${content}]]></content>
-</entry>`;
+  return `  <entry>
+    <title type="html">${title}</title>
+    <published>${timestamp}</published>
+    <updated>${timestamp}</updated>
+    <id>${url}</id>
+    <link rel="alternate" type="text/html" href="${url}"/>
+    <content type="html">
+      <![CDATA[${content}]]>
+  </content>
+  </entry>
+`;
 }
 
 module.exports = function (
