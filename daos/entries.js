@@ -46,6 +46,7 @@ function getLatestEntriesForSite(db, siteId) {
         SELECT * 
         FROM entries
         WHERE siteId=$siteId
+        ORDER BY id DESC
         LIMIT 15;
       `,
       {
