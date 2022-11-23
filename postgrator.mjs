@@ -1,8 +1,13 @@
 import Postgrator from 'postgrator';
 import sqlite3 from 'sqlite3';
 import path from 'path';
+import pino from 'pino';
+
+const logger = pino();
 
 async function migrate() {
+  logger.info('MIGRATION: Starting migrations.');
+
   const db = new sqlite3.Database(path.join('./db/rss_feeder.sqlite'));
 
   const execQuery = (query) => {
@@ -27,20 +32,18 @@ async function migrate() {
     const result = await postgrator.migrate();
 
     if (result.length === 0) {
-      console.log(
-        'No migrations run for schema "public". Already at the latest one.'
-      );
+      logger.info('MIGRATION: No migrations run; already at the latest one.');
     }
 
-    console.log('Migration done.');
+    logger.info('MIGRATION: Done.');
 
     process.exitCode = 0;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     process.exitCode = 1;
   }
 
-  await db.close();
+  db.close();
 }
 
 migrate();
