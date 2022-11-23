@@ -12,7 +12,15 @@ module.exports = async function (fastify, opts) {
       return;
     }
 
-    const entries = await getLatestEntriesForSite(fastify.sqlite, site.id);
+    const entries = (
+      await getLatestEntriesForSite(fastify.sqlite, site.id)
+    ).map(({ id, title, url, timestamp, fetchedAt }) => ({
+      id,
+      title,
+      url,
+      timestamp,
+      fetchedAt,
+    }));
 
     return { ...site, entries };
   });
