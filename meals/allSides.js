@@ -39,10 +39,18 @@ module.exports = async function () {
 
         const month = months.get(rawMonth.toLowerCase());
         const day = parseInt(rawDay);
-        const dateLegit = !isNaN(month) && !isNaN(day) && !isNaN(rawYear);
-        const timestamp = dateLegit
-          ? new Date(rawYear, month, day)
-          : new Date().getTime();
+
+        const [_, timeString] = $('.date-display-single')
+          .attr('content')
+          .split('T');
+
+        const dateTimeLegit =
+          !isNaN(month) && !isNaN(day) && !isNaN(rawYear) && !!timeString;
+        const timestamp = dateTimeLegit
+          ? new Date(
+              `${rawYear}-${month + 1}-${day}T${timeString}`
+            ).toISOString()
+          : new Date().toISOString();
 
         return {
           title,
