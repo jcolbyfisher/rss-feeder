@@ -24,8 +24,8 @@ module.exports = (
       ({ title, url, content, timestamp }) => `
   <entry>
     <title type="html">${escape(title)}</title>
-    <published>${escape(new Date(timestamp).toISOString())}</published>
-    <updated>${escape(new Date(timestamp).toISOString())}</updated>
+    <published>${escape(timestamp)}</published>
+    <updated>${escape(timestamp)}</updated>
     <id>${escape(url)}</id>
     <link rel="alternate" type="text/html" href="${escape(url)}"/>
     <content type="html">${escape(content)}</content>
