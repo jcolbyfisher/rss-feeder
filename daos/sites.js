@@ -1,7 +1,10 @@
 function getSite(db, name) {
   return new Promise(function (resolve, reject) {
     db.get(
-      `SELECT * FROM sites where name=$name;`,
+      `SELECT * 
+      FROM sites
+      WHERE name=$name
+      COLLATE NOCASE;`,
       {
         $name: name,
       },
