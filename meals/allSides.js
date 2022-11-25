@@ -1,6 +1,8 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+const months = require('../utils/months');
+
 const name = 'AllSides';
 const url = 'https://www.allsides.com';
 const icon = 'https://www.allsides.com/sites/default/files/AllSides-Icon.png';
@@ -28,10 +30,19 @@ module.exports = async function () {
         const story = $('.story-id-page-description').html();
         const coverage = $('.featured-coverage').html();
 
-        // TODO: manually parse this
-        const timestamp = $('.date-display-single').text();
-
         const content = `${image}<br />${story}<br />${coverage}`;
+
+        // convert pretty DOM date to JS parsable date
+        const [rawMonth, rawDay, rawYear] = $('.date-display-single')
+          .text()
+          .split(' ');
+
+        const month = months.get(rawMonth.toLowerCase());
+        const day = parseInt(rawDay);
+        const dateLegit = !isNaN(month) && !isNaN(day) && !isNaN(rawYear);
+        const timestamp = dateLegit
+          ? new Date(rawYear, month, day)
+          : new Date().getTime();
 
         return {
           title,
