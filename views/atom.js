@@ -28,9 +28,7 @@ module.exports = (
     <updated>${escape(timestamp)}</updated>
     <id>${escape(url)}</id>
     <link rel="alternate" type="text/html" href="${escape(url)}"/>
-    <content type="html">${escape('<h1>test</h1>')}
-      ${escape(content)}
-  </content>
+    <content type="html">${escape(content)}</content>
   </entry>
   `
     )
