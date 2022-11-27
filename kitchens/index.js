@@ -44,7 +44,7 @@ module.exports = () =>
       );
 
       await Promise.all(
-        siteFeed.entries.map(async (entry) => {
+        siteFeed.entries.reverse().map(async (entry) => {
           try {
             const existingEntry = await getEntry(db, siteCache.id, entry.link);
 
