@@ -28,6 +28,7 @@
     "fastify-sqlite": "^1.1.0",
     "html-escaper": "^3.0.3",
     "postgrator": "^7.1.1",
+    "require-dir": "^1.2.0",
     "toad-scheduler": "^2.0.0"
   },
   "devDependencies": {
