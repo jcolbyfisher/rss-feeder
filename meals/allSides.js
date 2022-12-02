@@ -37,19 +37,27 @@ module.exports = async function () {
           .text()
           .split(' ');
 
-        const month = months.get(rawMonth.toLowerCase());
-        const day = parseInt(rawDay);
+        // get plan number val
+        // then convert to number string with leading zero
+        const month = months
+          .get(rawMonth.toLowerCase())
+          .toString()
+          .padStart(2, '0');
+        const day = parseInt(rawDay).toString().padStart(2, '0');
 
         const [_, timeString] = $('.date-display-single')
           .attr('content')
           .split('T');
 
-        const dateTimeLegit =
-          !isNaN(month) && !isNaN(day) && !isNaN(rawYear) && !!timeString;
-        const timestamp = dateTimeLegit
-          ? new Date(
-              `${rawYear}-${month + 1}-${day}T${timeString}`
-            ).toISOString()
+        const fromContentDate = new Date(
+          `${rawYear}-${month}-${day}T${timeString}`
+        );
+
+        const validContentDate =
+          fromContentDate instanceof Date && !isNaN(fromContentDate.valueOf());
+
+        const timestamp = validContentDate
+          ? fromContentDate.toISOString()
           : new Date().toISOString();
 
         return {
