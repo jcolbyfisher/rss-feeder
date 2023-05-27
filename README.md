@@ -2,6 +2,8 @@
 
 Convert a site into an RSS feed. Yummy!
 
+**UPDATE 05/27/2023**: this has been running with 100% accuracy & reliability since the commits on 12/02/2022. There's definitely opportunities for improvement, but the code as-is does everything I need it to 🎉
+
 TODO:
 
 - [x] scrape a site
